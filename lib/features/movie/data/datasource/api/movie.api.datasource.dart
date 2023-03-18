@@ -18,7 +18,7 @@ class MovieApiDatasourceImpl extends MovieApiDatasource {
     const url = 'https://api.themoviedb.org/3/discover/movie';
     const queryParameters = <String, dynamic>{
       'api_key': 'd5b5d5f9fe80638dcaa9a843e5ec2398',
-      'language': 'en-US',
+      'language': 'es-ES',
       'sort_by': 'popularity.desc',
       'include_adult': false,
       'include_video': false,

@@ -1,7 +1,13 @@
+import 'dart:developer';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_examples/common/helpers/index.dart';
 import 'package:flutter_examples/config/index.dart';
 import 'package:flutter_examples/features/movie/presentation/bloc/movie_bloc.dart';
+import 'package:flutter_examples/features/movie/presentation/screens/movie.screen.dart';
+import 'package:flutter_examples/features/movie/presentation/widgets/index.dart';
 import 'package:flutter_examples/injection_container.dart';
 
 class MoviesScreen extends StatefulWidget {
@@ -50,7 +56,9 @@ class _MoviesScreenState extends State<MoviesScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const CircularProgressIndicator(),
-                    SizedBox(height: responsive.dp(1),),
+                    SizedBox(
+                      height: responsive.dp(1),
+                    ),
                     Text(
                       'Cargando...',
                       style: TextStyle(
@@ -111,8 +119,11 @@ class _MoviesScreenState extends State<MoviesScreen> {
                             width: state.movies[index].isExpandable!
                                 ? responsive.wp(100)
                                 : responsive.wp(20),
-                            child: _Image(
-                              path: state.movies[index].backdropPath!,
+                            child: Hero(
+                              tag: state.movies[index].id!,
+                              child: ImageWidget(
+                                path: state.movies[index].posterPath!,
+                              ),
                             ),
                           ),
                         ),
@@ -123,11 +134,15 @@ class _MoviesScreenState extends State<MoviesScreen> {
                             children: [
                               Flexible(
                                 child: AnimatedOpacity(
-                                  duration: const Duration(milliseconds: 350),
+                                  duration: const Duration(
+                                    milliseconds: milliseconds,
+                                  ),
                                   opacity: !state.movies[index].isExpandable!
                                       ? 1
                                       : 0,
                                   child: RichText(
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 5,
                                     text: TextSpan(
                                       children: <InlineSpan>[
                                         TextSpan(
@@ -146,6 +161,18 @@ class _MoviesScreenState extends State<MoviesScreen> {
                                             color: Colors.black87,
                                             fontSize: responsive.dp(1.4),
                                           ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              log('message');
+                                              Navigator.of(context).push(
+                                                navegarMapaFadeIn(
+                                                  context,
+                                                  MovieScreen(
+                                                    movie: state.movies[index],
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                         ),
                                       ],
                                     ),
@@ -164,47 +191,6 @@ class _MoviesScreenState extends State<MoviesScreen> {
           },
         ),
       ),
-    );
-  }
-}
-
-class _Image extends StatelessWidget {
-  const _Image({
-    required this.path,
-  });
-  final String path;
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInImage(
-      fit: BoxFit.fill,
-      height: double.infinity,
-      width: double.infinity,
-      placeholder: const AssetImage('assets/img/loading.gif'),
-      placeholderErrorBuilder: (_, __, ___) =>
-          const CircularProgressIndicator.adaptive(),
-      image: NetworkImage(
-        'https://image.tmdb.org/t/p/w600_and_h900_bestv2/$path',
-      ),
-      imageErrorBuilder: (_, __, ___) => const _NoPicture(),
-    );
-  }
-}
-
-class _NoPicture extends StatelessWidget {
-  const _NoPicture();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const <Widget>[
-        Icon(Icons.no_photography, size: 80, color: Color(0xffB1B1B1)),
-        Text(
-          'NO CONNECTION',
-          style: TextStyle(fontSize: 10, letterSpacing: 1),
-        )
-      ],
     );
   }
 }
