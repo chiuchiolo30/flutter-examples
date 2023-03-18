@@ -11,7 +11,7 @@ abstract class MovieApiDatasource {
 class MovieApiDatasourceImpl extends MovieApiDatasource {
   MovieApiDatasourceImpl(this.http);
 
-  final HttpInterface http;
+  final DioAdapter http;
 
   @override
   Future<List<Movie>?> getMovies() async {

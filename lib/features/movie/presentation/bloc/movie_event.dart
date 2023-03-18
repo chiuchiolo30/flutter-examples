@@ -8,3 +8,10 @@ abstract class MovieEvent extends Equatable {
 }
 
 class GetMovies extends MovieEvent {}
+
+class ResetMovies extends MovieEvent {}
+
+class IsExpandable extends MovieEvent {
+  const IsExpandable({required this.index});
+  final int index;
+}
