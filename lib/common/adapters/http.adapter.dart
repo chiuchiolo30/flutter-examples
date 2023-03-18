@@ -6,7 +6,7 @@ class HttpAdapter implements HttpInterface {
   
   @override
   Future<Either<L, R>> delete<L, R>({required String url}) {
-    // TODO: implement delete
+    
     throw UnimplementedError();
   }
 
@@ -15,7 +15,7 @@ class HttpAdapter implements HttpInterface {
     required String url,
     required String directory,
   }) {
-    // TODO: implement download
+    
     throw UnimplementedError();
   }
 
@@ -24,7 +24,7 @@ class HttpAdapter implements HttpInterface {
     required String url,
     dynamic queryParameters,
   }) {
-    // TODO: implement get
+    
     throw UnimplementedError();
   }
 
@@ -33,13 +33,13 @@ class HttpAdapter implements HttpInterface {
     required String url,
     dynamic data,
   }) {
-    // TODO: implement post
+    
     throw UnimplementedError();
   }
 
   @override
   Future<Either<L, R>> put<L, R>({required String url}) {
-    // TODO: implement put
+    
     throw UnimplementedError();
   }
 }

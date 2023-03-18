@@ -1,4 +1,6 @@
-import 'package:flutter_examples/common/entities/movie.entitie.dart';
+
+
+import 'package:flutter_examples/features/movie/domain/entities/movie.entitie.dart';
 
 class MovieModel extends Movie {
   const MovieModel({
