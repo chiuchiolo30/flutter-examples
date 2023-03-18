@@ -10,12 +10,12 @@ Future<void> setup() async {
   sl
     ..registerLazySingleton(Dio.new)
     ..registerLazySingleton<HttpInterface>(() => DioAdapter(sl()))
-    ..registerLazySingleton(HttpAdapter.new)
     ..registerLazySingleton<MovieApiDatasource>(
         () => MovieApiDatasourceImpl( sl() ), )
     ..registerLazySingleton<MovieRepository>(
         () => MovieRepositoryImpl( sl() ), )
     ..registerLazySingleton(
-        () => GetMoviesUsecase( sl() ), );
+        () => GetMoviesUsecase( sl() ), )
+    ..registerSingleton(MovieBloc(getMoviesUsecase: sl() ));
         
 }

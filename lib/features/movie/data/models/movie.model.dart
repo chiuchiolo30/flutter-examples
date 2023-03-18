@@ -21,7 +21,7 @@ class MovieModel extends Movie {
         backdropPath: json['backdrop_path'] != null
             ? json['backdrop_path'] as String
             : null,
-        id: json['id'] as int,
+        id: json['id'] as num,
         originalLanguage: json['original_language'] != null
             ? json['original_language'] as String
             : null,
@@ -30,7 +30,7 @@ class MovieModel extends Movie {
             : null,
         overview: json['overview'] != null ? json['overview'] as String : null,
         popularity:
-            json['popularity'] != null ? json['popularity'] as double : null,
+            json['popularity'] != null ? json['popularity'] as num : null,
         posterPath:
             json['poster_path'] != null ? json['poster_path'] as String : null,
         releaseDate: json['release_date'] != null
@@ -38,9 +38,9 @@ class MovieModel extends Movie {
             : null,
         title: json['title'] != null ? json['title'] as String : null,
         voteAverage: json['vote_average'] != null
-            ? json['vote_average'] as double
+            ? json['vote_average']  as num
             : null,
         voteCount:
-            json['vote_count'] != null ? json['vote_count'] as int : null,
+            json['vote_count'] != null ? json['vote_count'] as num : null,
       );
 }

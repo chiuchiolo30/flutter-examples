@@ -4,6 +4,6 @@ import 'package:flutter_examples/features/movie/domain/entities/movie.entitie.da
 
 abstract class MovieRepository {
 
-  Future<Movie?> getMovies();
+  Future<List<Movie>?> getMovies();
   
 }

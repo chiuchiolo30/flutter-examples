@@ -8,6 +8,6 @@ class MovieRepositoryImpl extends MovieRepository {
   final MovieApiDatasource api;
 
   @override
-  Future<Movie?> getMovies() => api.getMovies();
+  Future<List<Movie>?> getMovies() => api.getMovies();
   
 }

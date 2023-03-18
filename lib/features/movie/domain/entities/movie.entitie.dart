@@ -20,34 +20,34 @@ class Movie extends Equatable {
 
   final bool? adult;
   final String? backdropPath;
-  final List<int>? genreIds;
-  final int? id;
+  final List<num>? genreIds;
+  final num? id;
   final String? originalLanguage;
   final String? originalTitle;
   final String? overview;
-  final double? popularity;
+  final num? popularity;
   final String? posterPath;
   final String? releaseDate;
   final String? title;
   final bool? video;
-  final double? voteAverage;
-  final int? voteCount;
+  final num? voteAverage;
+  final num? voteCount;
 
   Movie copyWith({
     bool? adult,
     String? backdropPath,
-    List<int>? genreIds,
-    int? id,
+    List<num>? genreIds,
+    num? id,
     String? originalLanguage,
     String? originalTitle,
     String? overview,
-    double? popularity,
+    num? popularity,
     String? posterPath,
     String? releaseDate,
     String? title,
     bool? video,
-    double? voteAverage,
-    int? voteCount,
+    num? voteAverage,
+    num? voteCount,
   }) =>
       Movie(
         adult: adult ?? this.adult,

@@ -6,6 +6,6 @@ class GetMoviesUsecase {
   
     final MovieRepository repository;
   
-    Future<Movie?> call() async => repository.getMovies();
+    Future<List<Movie>?> call() async => repository.getMovies();
     
   }

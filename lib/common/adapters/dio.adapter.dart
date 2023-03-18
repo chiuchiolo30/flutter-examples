@@ -1,3 +1,4 @@
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_examples/common/entities/http_error.entitie.dart';
@@ -44,7 +45,7 @@ class DioAdapter extends HttpInterface {
         url,
         queryParameters: queryParameters,
       );
-      return Right(result.data as R);
+      return Right(result as R);
     } catch (e, s) {
       if (e is DioError) return Left(HttpError(error: e, stackTrace: s) as L);
       return Left(HttpError(e: e, stackTrace: s) as L);
