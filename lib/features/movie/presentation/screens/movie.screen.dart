@@ -34,7 +34,7 @@ class _MovieScreenState extends State<MovieScreen> {
         children: <Widget>[
           Hero(
             tag: widget.movie.id!,
-            child: Container(
+            child: SizedBox(
               height: responsive.dp(30),
               child: ImageWidget(path: widget.movie.posterPath!),
             ),

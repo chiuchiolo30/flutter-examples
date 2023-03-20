@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +16,7 @@ class MoviesScreen extends StatefulWidget {
 }
 
 class _MoviesScreenState extends State<MoviesScreen> {
-  static const milliseconds = 500;
+  static const milliseconds = 400;
   late MovieBloc bloc;
 
   @override
@@ -130,56 +128,64 @@ class _MoviesScreenState extends State<MoviesScreen> {
                         Positioned(
                           right: 0,
                           left: responsive.wp(21),
-                          child: Row(
-                            children: [
-                              Flexible(
-                                child: AnimatedOpacity(
-                                  duration: const Duration(
-                                    milliseconds: milliseconds,
-                                  ),
-                                  opacity: !state.movies[index].isExpandable!
-                                      ? 1
-                                      : 0,
-                                  child: RichText(
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 5,
-                                    text: TextSpan(
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                          text:
+                          child: Transform(
+                            transform: Matrix4.identity()
+                              ..translate(
+                                !state.movies[index].isExpandable!
+                                    ? 0.0
+                                    : responsive.width,
+                              ),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: AnimatedOpacity(
+                                    duration: const Duration(
+                                      milliseconds: milliseconds,
+                                    ),
+                                    opacity: !state.movies[index].isExpandable!
+                                        ? 1
+                                        : 0,
+                                    child: RichText(
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 5,
+                                      text: TextSpan(
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text:
                                               '${state.movies[index].title!}\n',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: responsive.dp(1.6),
-                                            overflow: TextOverflow.ellipsis,
-                                            fontWeight: FontWeight.w500,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: responsive.dp(1.6),
+                                              overflow: TextOverflow.ellipsis,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
-                                        ),
-                                        TextSpan(
-                                          text: state.movies[index].overview,
-                                          style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: responsive.dp(1.4),
-                                          ),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () {
-                                              log('message');
-                                              Navigator.of(context).push(
-                                                navegarMapaFadeIn(
-                                                  context,
-                                                  MovieScreen(
-                                                    movie: state.movies[index],
+                                          TextSpan(
+                                            text: state.movies[index].overview,
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: responsive.dp(1.4),
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                Navigator.of(context).push(
+                                                  navegarMapaFadeIn(
+                                                    context,
+                                                    MovieScreen(
+                                                      movie:
+                                                          state.movies[index],
+                                                    ),
                                                   ),
-                                                ),
-                                              );
-                                            },
-                                        ),
-                                      ],
+                                                );
+                                              },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         )
                       ],
