@@ -15,18 +15,29 @@ class MoviesScreen extends StatefulWidget {
   State<MoviesScreen> createState() => _MoviesScreenState();
 }
 
-class _MoviesScreenState extends State<MoviesScreen> {
+class _MoviesScreenState extends State<MoviesScreen>
+    with TickerProviderStateMixin {
   static const milliseconds = 400;
   late MovieBloc bloc;
+  late AnimationController _animationController;
+
+  double aux = 0;
 
   @override
   void initState() {
     super.initState();
     bloc = sl.get<MovieBloc>();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: milliseconds,
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
     bloc.add(ResetMovies());
     super.dispose();
   }
@@ -100,7 +111,17 @@ class _MoviesScreenState extends State<MoviesScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            bloc.add(IsExpandable(index: index));
+                            if (!state.movies[index].isExpandable!) {
+                              _animationController.forward();
+                            } else {
+                              _animationController.reverse();
+                            }
+                            bloc.add(
+                              IsExpandable(
+                                index: index,
+                                width: responsive.width,
+                              ),
+                            );
                           },
                           child: AnimatedContainer(
                             decoration: BoxDecoration(
@@ -128,64 +149,74 @@ class _MoviesScreenState extends State<MoviesScreen> {
                         Positioned(
                           right: 0,
                           left: responsive.wp(21),
-                          child: Transform(
-                            transform: Matrix4.identity()
-                              ..translate(
-                                !state.movies[index].isExpandable!
-                                    ? 0.0
-                                    : responsive.width,
-                              ),
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: AnimatedOpacity(
-                                    duration: const Duration(
-                                      milliseconds: milliseconds,
-                                    ),
-                                    opacity: !state.movies[index].isExpandable!
-                                        ? 1
-                                        : 0,
-                                    child: RichText(
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 5,
-                                      text: TextSpan(
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text:
+                          child: AnimatedBuilder(
+                            animation: _animationController,
+                            builder: (context, child) {
+                              return Transform(
+                                transform: Matrix4.identity()
+                                  ..translate(
+                                    state.movies[index].position *
+                                        _animationController.value,
+                                  ),
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: AnimatedOpacity(
+                                        duration: const Duration(
+                                          milliseconds: milliseconds,
+                                        ),
+                                        opacity:
+                                            !state.movies[index].isExpandable!
+                                                ? 1
+                                                : 0,
+                                        child: RichText(
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 5,
+                                          text: TextSpan(
+                                            children: <InlineSpan>[
+                                              TextSpan(
+                                                text:
                                               '${state.movies[index].title!}\n',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: responsive.dp(1.6),
-                                              overflow: TextOverflow.ellipsis,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: responsive.dp(1.6),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: state
+                                                    .movies[index].overview,
+                                                style: TextStyle(
+                                                  color: Colors.black87,
+                                                  fontSize: responsive.dp(1.4),
+                                                ),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        Navigator.of(context)
+                                                            .push(
+                                                          navegarMapaFadeIn(
+                                                            context,
+                                                            MovieScreen(
+                                                              movie:
+                                                                  state.movies[
+                                                                      index],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                              ),
+                                            ],
                                           ),
-                                          TextSpan(
-                                            text: state.movies[index].overview,
-                                            style: TextStyle(
-                                              color: Colors.black87,
-                                              fontSize: responsive.dp(1.4),
-                                            ),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                Navigator.of(context).push(
-                                                  navegarMapaFadeIn(
-                                                    context,
-                                                    MovieScreen(
-                                                      movie:
-                                                          state.movies[index],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         )
                       ],

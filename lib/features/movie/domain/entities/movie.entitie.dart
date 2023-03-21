@@ -17,6 +17,7 @@ class Movie extends Equatable {
     this.voteAverage,
     this.voteCount,
     this.isExpandable = false,
+    this.position = 0.0,
   });
 
   final bool? adult;
@@ -34,6 +35,7 @@ class Movie extends Equatable {
   final num? voteAverage;
   final num? voteCount;
   final bool? isExpandable;
+  final double position;
 
   Movie copyWith({
     bool? adult,
@@ -51,6 +53,7 @@ class Movie extends Equatable {
     num? voteAverage,
     num? voteCount,
     bool? isExpandable,
+    double? position,
   }) =>
       Movie(
         adult: adult ?? this.adult,
@@ -68,6 +71,7 @@ class Movie extends Equatable {
         voteAverage: voteAverage ?? this.voteAverage,
         voteCount: voteCount ?? this.voteCount,
         isExpandable: isExpandable ?? this.isExpandable,
+        position: position ?? this.position,
       );
 
   @override
@@ -87,5 +91,6 @@ class Movie extends Equatable {
         voteAverage,
         voteCount,
         isExpandable,
+        position,
       ];
 }

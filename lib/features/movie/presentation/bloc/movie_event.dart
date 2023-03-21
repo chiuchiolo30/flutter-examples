@@ -12,6 +12,7 @@ class GetMovies extends MovieEvent {}
 class ResetMovies extends MovieEvent {}
 
 class IsExpandable extends MovieEvent {
-  const IsExpandable({required this.index});
+  const IsExpandable({required this.index, required this.width});
   final int index;
+  final double width;
 }

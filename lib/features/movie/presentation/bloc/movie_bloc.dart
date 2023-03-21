@@ -32,9 +32,20 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         .map<int, Movie>((key, value) {
           if (index == key) {
             return MapEntry<int, Movie>(
-                key, value.copyWith(isExpandable: !value.isExpandable!),);
+              key,
+              value.copyWith(
+                isExpandable: !value.isExpandable!,
+                position:   event.width,
+              ),
+            );
           }
-          return MapEntry<int, Movie>(key, value.copyWith(isExpandable: false));
+          return MapEntry<int, Movie>(
+            key,
+            value.copyWith(
+              isExpandable: false,
+              position: 0,
+            ),
+          );
         })
         .values
         .toList();
