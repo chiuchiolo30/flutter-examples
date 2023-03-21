@@ -12,7 +12,7 @@ A Very Good Project created by Very Good CLI.
 <table align="center">
     <tr>
         <td>
-            <video src="./video/01.mp4" alt="list" width="200" type="video/mp4"/>
+            <img src="./screenshot/movies.gif" alt="Search-Light" width="200"/>
         </td>
     </tr>
 </table>
