@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_examples/common/helpers/index.dart';
+import 'package:flutter_examples/common/index.dart';
 import 'package:flutter_examples/config/index.dart';
 import 'package:flutter_examples/features/movie/presentation/bloc/movie_bloc.dart';
 import 'package:flutter_examples/features/movie/presentation/screens/movie.screen.dart';
@@ -82,6 +83,10 @@ class _MoviesScreenState extends State<MoviesScreen>
             return ListView.builder(
               itemCount: state.movies.length,
               itemBuilder: (BuildContext context, int index) {
+                final overview = state.movies[index].overview!.isNotEmpty
+                    ? state.movies[index].overview!
+                    : loremIpsum;
+
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: milliseconds),
                   margin: EdgeInsets.all(responsive.dp(1)),
@@ -176,7 +181,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                                             children: <InlineSpan>[
                                               TextSpan(
                                                 text:
-                                              '${state.movies[index].title!}\n',
+                                                    '${state.movies[index].title!}\n',
                                                 style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: responsive.dp(1.6),
@@ -186,8 +191,7 @@ class _MoviesScreenState extends State<MoviesScreen>
                                                 ),
                                               ),
                                               TextSpan(
-                                                text: state
-                                                    .movies[index].overview,
+                                                text: overview,
                                                 style: TextStyle(
                                                   color: Colors.black87,
                                                   fontSize: responsive.dp(1.4),
