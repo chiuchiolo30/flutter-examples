@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(context, navegarMapaFadeIn(context, e.route));
                 },
                 child: Text(
-                  firstLetterCapitalized(e.toString()),
+                  firstLetterCapitalized(e.name),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: fontSizeTitleButton,
@@ -51,9 +51,9 @@ class HomeScreen extends StatelessWidget {
 }
 
 extension Helpers on HomeScreen {
-  String firstLetterCapitalized(String text) => text.split('.')[1].replaceRange(
+  String firstLetterCapitalized(String text) => text.replaceRange(
         0,
         1,
-        text.split('.')[1][0].toUpperCase(),
+        text[0].toUpperCase(),
       );
 }
