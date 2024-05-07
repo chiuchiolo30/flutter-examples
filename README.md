@@ -11,8 +11,17 @@ A Very Good Project created by Very Good CLI.
 ---
 <table align="center">
     <tr>
-        <td>
+        <td style='background-color:#000'>
             <img src="./screenshot/movies.gif" alt="Search-Light" width="200"/>
+        </td>
+        <td style='background-color:#000'>
+            <img src="./screenshot/chat.gif" alt="Search-Light" width="200"/>
+        </td>
+        <td style='background-color:#000'>
+            <img src="./screenshot/mario.gif" alt="Search-Light" width="200"/>
+        </td>
+        <td style='background-color:#000'>
+            <img src="./screenshot/vintage.gif" alt="Search-Light" width="200"/>
         </td>
     </tr>
 </table>
