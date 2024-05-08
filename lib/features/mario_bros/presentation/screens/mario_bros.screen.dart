@@ -10,8 +10,7 @@ class MarioBrosScreen extends StatefulWidget {
   State<MarioBrosScreen> createState() => _MarioBrosScreenState();
 }
 
-class _MarioBrosScreenState extends State<MarioBrosScreen>
-    with TickerProviderStateMixin {
+class _MarioBrosScreenState extends State<MarioBrosScreen> with TickerProviderStateMixin {
   late AnimationController animationController;
 
   double onVerticalDragUpdate = 0.00;
@@ -34,6 +33,7 @@ class _MarioBrosScreenState extends State<MarioBrosScreen>
     super.dispose();
   }
 
+  bool dragFromTop = false;
   @override
   Widget build(BuildContext context) {
     final responsive = Responsive(context);
@@ -51,20 +51,17 @@ class _MarioBrosScreenState extends State<MarioBrosScreen>
                   ..setEntry(3, 2, 0.001)
                   ..rotateX(onVerticalDragUpdate * (-pi / 4)),
                 child: GestureDetector(
+                  onVerticalDragStart: (details) {
+                    dragFromTop = details.localPosition.dy <= 140;
+                  },
                   onVerticalDragUpdate: (details) {
-                    print(
-                        'onVerticalDragUpdate: ${(details.localPosition.dy / 1000).clamp(0.0001, 1)}');
-
-                    setState(() {
-                      onVerticalDragUpdate =
-                          (details.localPosition.dy / 1000).clamp(0.0001, 1);
-                    });
+                    if (!dragFromTop) {
+                      return;
+                    }
+                    setState(() => onVerticalDragUpdate = (details.localPosition.dy / 1000).clamp(0.0001, 1));
                   },
                   onVerticalDragEnd: (details) {
-                    print('END');
-                    setState(() {
-                      onVerticalDragUpdate = 0.0;
-                    });
+                    setState(() => onVerticalDragUpdate = 0.0);
                   },
                   child: Container(
                     margin: EdgeInsets.all(responsive.dp(1)),
@@ -119,9 +116,7 @@ class _MarioBrosScreenState extends State<MarioBrosScreen>
               animation: animationController,
               builder: (context, child) {
                 return Transform(
-                  transform: Matrix4.identity()
-                  ..translate(0.000001, -responsive.hp((onVerticalDragUpdate * 140)), 0),
-                   
+                  transform: Matrix4.identity()..translate(0.000001, -responsive.hp((onVerticalDragUpdate * 140)), 0),
                   child: Image.asset(
                     'assets/img/mariob-2.png',
                   ),
