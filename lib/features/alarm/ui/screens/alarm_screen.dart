@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -10,13 +12,30 @@ class AlarmScreen extends StatefulWidget {
 
 class AlarmScreenState extends State<AlarmScreen> {
   double _offsetX = 0;
+  double _offsetX2 = -1;
   double _offsetY = 0;
+  double _offsetY2 = 0;
+  int startNumber = 30;
+  int startHour = 0;
+
   final _duration = const Duration(milliseconds: 600);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            if (_offsetX2 == 0) {
+              _offsetX2 = -1;
+            } else {
+              _offsetX2 = 0;
+            }
+          });
+        },
+        child: const Icon(FontAwesomeIcons.plus),
+      ),
       body: Stack(
         children: [
           Column(
@@ -281,16 +300,60 @@ class AlarmScreenState extends State<AlarmScreen> {
                     children: [
                       Positioned.fill(
                         child: Align(
-                          alignment: Alignment.centerRight,
+                          alignment: Alignment(1.01, 0.0),
+                          // alignment: Alignment.centerRight,
                           child: AnimatedContainer(
+                            transform: Matrix4.translationValues(_offsetX2 == 0 ? 0 : MediaQuery.of(context).size.width, 0, 0),
                             duration: _duration,
                             width: MediaQuery.of(context).size.width * 2.5,
                             height: MediaQuery.of(context).size.height * 2.5,
-                            // transform: Matrix4.translationValues(_offsetX * MediaQuery.of(context).size.width, 0, 0),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
+                            child: GestureDetector(
+                              onVerticalDragUpdate: (details) {
+                                setState(() {
+                                  if (details.delta.dy > 0) {
+                                    startNumber--;
+                                  } else if (details.delta.dy < 0) {
+                                    startNumber++;
+                                  }
+                                  if (startNumber > 59) {
+                                    startNumber = 0;
+                                  } else if (startNumber < 0) {
+                                    startNumber = 59;
+                                  }
+                                });
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: Stack(
+                                  children: [
+                                    ...List<int>.generate(24, (index) => index).map((index) {
+                                      var number = (startNumber + index) % 60;
+                                      double angle = 2 * math.pi * (index / 24);
+
+                                      double fontSize = 70;
+                                      double scale = 0.5 * (math.cos(2 * math.pi * (index + 12) / 24) + 1);
+
+                                      final radius = MediaQuery.of(context).size.width * 1.13;
+                                      return Transform.translate(
+                                        offset: Offset.fromDirection(
+                                          angle,
+                                          radius,
+                                        ),
+                                        child: Transform.scale(
+                                          scale: scale,
+                                          child: Text(
+                                            '${number.toString().padLeft(2, '0')}',
+                                            key: ValueKey<int>(number),
+                                            style: TextStyle(
+                                              fontSize: fontSize,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -298,17 +361,90 @@ class AlarmScreenState extends State<AlarmScreen> {
                       ),
                       Positioned.fill(
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          // alignment: Alignment.centerLeft,
+                          alignment: Alignment(-1.01, 0.0),
                           child: AnimatedContainer(
                             width: MediaQuery.of(context).size.width * 2.5,
                             height: MediaQuery.of(context).size.height * 2.5,
                             duration: _duration,
-                            // transform: Matrix4.translationValues(_offsetX * MediaQuery.of(context).size.width * 1.5, 0, 0),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.blue,
-                                shape: BoxShape.circle,
+                            transform: Matrix4.translationValues(_offsetX2 == 0 ? 0 : -MediaQuery.of(context).size.width, 0, 0),
+                            child: GestureDetector(
+                              onVerticalDragUpdate: (details) async {
+                                await Future<void>.delayed(const Duration(milliseconds: 100));
+                                setState(() {
+                                  if (details.delta.dy > 0) {
+                                    startHour--;
+                                  } else if (details.delta.dy < 0) {
+                                    startHour++;
+                                  }
+                                  if (startHour > 23) {
+                                    startHour = 0;
+                                  } else if (startHour < 0) {
+                                    startHour = 23;
+                                  }
+                                });
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: Colors.white,
+                                child: Stack(
+                                  children: [
+                                    ...List<int>.generate(24, (index) => index).map((index) {
+                                      var hour = (index + startHour) % 24;
+                                      double angle = 2 * math.pi * index / 24;
+
+                                      double fontSize = 70;
+                                      double scale = 0.5 * (math.cos(2 * math.pi * (index) / 24) + 1);
+
+                                      final radius = MediaQuery.of(context).size.width * 1.12;
+                                      return Transform.translate(
+                                        offset: Offset.fromDirection(
+                                          angle,
+                                          radius,
+                                        ),
+                                        child: AnimatedSwitcher(
+                                          duration: const Duration(milliseconds: 500),
+                                          transitionBuilder: (Widget child, Animation<double> animation) {
+                                            return ScaleTransition(child: child, scale: animation);
+                                          },
+                                          child: Transform.scale(
+                                            scale: scale,
+                                            child: Text(
+                                              '${hour.toString().padLeft(2, '0')}',
+                                              key: ValueKey<int>(hour),
+                                              style: TextStyle(
+                                                fontSize: fontSize,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          // child: Text(
+                                          //   '${hour.toString().padLeft(2, '0')}',
+                                          //   key: ValueKey<int>(hour),
+                                          //   style: TextStyle(
+                                          //     fontSize: fontSize,
+                                          //     color: Colors.black,
+                                          //   ),
+                                          // ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
                               ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          height: 100,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Colors.grey[300]!,
+                              width: 2,
                             ),
                           ),
                         ),
@@ -406,9 +542,37 @@ class AlarmScreenState extends State<AlarmScreen> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
+          // Align(
+          //   child: CircleAvatar(
+          //     backgroundColor: Colors.black,
+          //     radius: MediaQuery.of(context).size.width * 0.5,
+          //     child: Stack(
+          //       children: [
+          //         ...List<int>.generate(20, (index) => index).map((index) {
+          //           double angle = math.pi / 10 * index; // Ajusta este valor para cambiar la separación entre los números
+          //           double fontSize = 20 * (1 - math.cos(angle));
+          //           double radius = MediaQuery.of(context).size.width * 0.45;
+          //           return Transform.translate(
+          //             offset: Offset.fromDirection(
+          //               angle,
+          //               radius,
+          //             ),
+          //             child: Text(
+          //               '${index + 1}',
+          //               style: TextStyle(
+          //                 fontSize: fontSize,
+          //                 color: Colors.white,
+          //               ),
+          //             ),
+          //           );
+          //         }),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
