@@ -19,6 +19,9 @@ class AlarmScreenState extends State<AlarmScreen> {
   int startNumber = 30;
   int startHour = 0;
   int minute = 0;
+  bool _move = false;
+  var selectedHour = 0;
+  var selectedMinute = 0;
 
   final _duration = const Duration(milliseconds: 600);
 
@@ -29,16 +32,7 @@ class AlarmScreenState extends State<AlarmScreen> {
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
       //     setState(() {
-      //       if (_offsetX2 == 0) {
-      //         _offsetX2 = -1;
-      //       } else {
-      //         _offsetX2 = 0;
-      //       }
-      //       if (_offsetY2 == 1) {
-      //         _offsetY2 = -1;
-      //       } else {
-      //         _offsetY2 = 1;
-      //       }
+      //       _move = !_move;
       //     });
       //   },
       //   child: const Icon(FontAwesomeIcons.plus),
@@ -278,10 +272,75 @@ class AlarmScreenState extends State<AlarmScreen> {
                             width: 10,
                           ),
                           Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(100),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Container(
+                                height: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          ...List.generate(144, (index) {
+                                            final height = index % 6 == 0 ? 10.0 : 3.0;
+                                            return Column(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(2),
+                                                  child: AnimatedContainer(
+                                                    width: 2,
+                                                    height: height,
+                                                    color: Colors.white,
+                                                    duration: _duration,
+                                                  ),
+                                                ),
+                                                if (index % 6 == 0) // Cada 6 líneas representan una hora
+                                                  Text(
+                                                    '${index ~/ 6}:00', // Muestra la hora
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(2),
+                                                  child: AnimatedContainer(
+                                                    width: 2,
+                                                    height: height,
+                                                    color: Colors.white,
+                                                    duration: _duration,
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 0,
+                                      bottom: 0,
+                                      left: 100,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            width: 2,
+                                            height: double.infinity,
+                                            color: Colors.red,
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -350,9 +409,11 @@ class AlarmScreenState extends State<AlarmScreen> {
                                   children: [
                                     ...List<int>.generate(24, (index) => index).map((index) {
                                       final number = (startNumber + index) % 60;
-                                      setState(() {
-                                        minute = number;
-                                      });
+                                      if (index == 12) {
+                                        setState(() {
+                                          selectedMinute = number;
+                                        });
+                                      }
                                       final angle = 2 * math.pi * (index / 24);
 
                                       const fontSize = 70.0;
@@ -415,6 +476,12 @@ class AlarmScreenState extends State<AlarmScreen> {
                                     ...List<int>.generate(24, (index) => index).map((index) {
                                       final hour = (index + startHour) % 24;
                                       final angle = 2 * math.pi * index / 24;
+
+                                      if (index == 0) {
+                                        setState(() {
+                                          selectedHour = hour;
+                                        });
+                                      }
 
                                       const fontSize = 70.0;
                                       final scale = 0.5 * (math.cos(2 * math.pi * (index) / 24) + 1);
@@ -541,7 +608,7 @@ class AlarmScreenState extends State<AlarmScreen> {
                 padding: const EdgeInsets.all(8),
                 onEnd: () {
                   log('end $_offsetX2 $_offsetY2 $_offsetX $_offsetY');
-                  if (_offsetX2 == -1.0 && _offsetY2 == 1.0 && _offsetX == -1.0 && _offsetY == -1.0) {
+                  if (_offsetX2 == -1.0 && _offsetY2 == 1.0 && _offsetX == -1.0 && _offsetY == -1.0 && !_move) {
                     log('entro');
                     setState(() {
                       _offsetX = 0;
@@ -550,7 +617,7 @@ class AlarmScreenState extends State<AlarmScreen> {
                   }
                 },
                 duration: _duration,
-                transform: Matrix4.translationValues(0, _offsetY2 == 1 ? MediaQuery.of(context).size.height / 10 : 0, 0),
+                transform: Matrix4.translationValues(0, _offsetY2 == 1 && !_move ? MediaQuery.of(context).size.height / 10 : 0, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -576,20 +643,50 @@ class AlarmScreenState extends State<AlarmScreen> {
                         icon: const Icon(FontAwesomeIcons.x),
                       ),
                     ),
-                    const Text(
-                      'Choose time',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedContainer(
+                          duration: _duration,
+                          transform: Matrix4.translationValues(0, _move == true ? MediaQuery.of(context).size.height / 10 : 0, 0),
+                          child: const Text(
+                            'Choose time',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: _duration,
+                          transform: Matrix4.translationValues(0, _move == false ? MediaQuery.of(context).size.height / 10 : 0, 0),
+                          child: const Text(
+                            'Remove all Points',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     CircleAvatar(
                       backgroundColor: Colors.black,
                       radius: 30,
                       child: IconButton(
                         color: Colors.white,
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            _move = true;
+                          });
+
+                          setState(() {
+                            _offsetX2 = -1;
+                            _offsetY2 = 1;
+                          });
+                        },
                         icon: const Icon(FontAwesomeIcons.check),
                       ),
                     ),
@@ -597,6 +694,112 @@ class AlarmScreenState extends State<AlarmScreen> {
                 ),
               ),
             ],
+          ),
+          Positioned(
+            top: 480,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+              duration: _duration,
+              opacity: _move ? 1 : 0,
+              child: CircleAvatar(
+                backgroundColor: Colors.transparent,
+                radius: 140,
+                child: Stack(
+                  children: [
+                    ...List.generate(60, (index) {
+                      final angle = 2 * math.pi * index / 60;
+                      const radius = 130.0;
+                      return Transform.translate(
+                        offset: Offset.fromDirection(
+                          angle,
+                          radius,
+                        ),
+                        child: Transform.rotate(
+                          angle: angle - math.pi / 2,
+                          child: AnimatedContainer(
+                            width: 2,
+                            height: _move ? 10 : 1,
+                            color: Colors.grey[400],
+                            duration: _duration,
+                          ),
+                        ),
+                      );
+                    }),
+                    ...List.generate(5, (index) {
+                      final angle = 2 * math.pi * index / 5;
+                      const radius = 100.0;
+                      return Transform.rotate(
+                        angle: angle - math.pi / 2,
+                        child: Transform.translate(
+                          offset: Offset.fromDirection(
+                            angle,
+                            radius,
+                          ),
+                          child: Transform.rotate(
+                            angle: angle - math.pi / 2,
+                            child: AnimatedContainer(
+                              duration: _duration,
+                              width: 2,
+                              height: _move ? 12 : 1,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: _duration,
+            top: _move ? 600 : 302,
+            left: _move ? 142 : 98,
+            child: AnimatedDefaultTextStyle(
+              duration: _duration,
+              style: TextStyle(
+                fontSize: !_move ? 70 : 35,
+                color: !_move ? Colors.transparent : Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              child: Text(
+                selectedHour.toString().padLeft(2, '0'),
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: _duration,
+            top: _move ? 600 : 298,
+            left: 182,
+            child: AnimatedDefaultTextStyle(
+              duration: _duration,
+              style: TextStyle(
+                fontSize: !_move ? 70 : 35,
+                color: !_move ? Colors.transparent : Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              child: const Text(
+                ':',
+              ),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: _duration,
+            top: _move ? 600 : 302,
+            left: _move ? 192 : 204,
+            child: AnimatedDefaultTextStyle(
+              duration: _duration,
+              style: TextStyle(
+                fontSize: !_move ? 70 : 35,
+                color: !_move ? Colors.transparent : Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
+              child: Text(
+                selectedMinute.toString().padLeft(2, '0'),
+              ),
+            ),
           ),
         ],
       ),
