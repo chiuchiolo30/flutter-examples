@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -14,9 +15,10 @@ class AlarmScreenState extends State<AlarmScreen> {
   double _offsetX = 0;
   double _offsetX2 = -1;
   double _offsetY = 0;
-  double _offsetY2 = 0;
+  double _offsetY2 = 1;
   int startNumber = 30;
   int startHour = 0;
+  int minute = 0;
 
   final _duration = const Duration(milliseconds: 600);
 
@@ -24,18 +26,23 @@ class AlarmScreenState extends State<AlarmScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (_offsetX2 == 0) {
-              _offsetX2 = -1;
-            } else {
-              _offsetX2 = 0;
-            }
-          });
-        },
-        child: const Icon(FontAwesomeIcons.plus),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     setState(() {
+      //       if (_offsetX2 == 0) {
+      //         _offsetX2 = -1;
+      //       } else {
+      //         _offsetX2 = 0;
+      //       }
+      //       if (_offsetY2 == 1) {
+      //         _offsetY2 = -1;
+      //       } else {
+      //         _offsetY2 = 1;
+      //       }
+      //     });
+      //   },
+      //   child: const Icon(FontAwesomeIcons.plus),
+      // ),
       body: Stack(
         children: [
           Column(
@@ -46,6 +53,21 @@ class AlarmScreenState extends State<AlarmScreen> {
                   builder: (context, constraints) {
                     final y = _offsetY * constraints.maxHeight;
                     return AnimatedContainer(
+                      onEnd: () {
+                        if (_offsetX == 0) return;
+                        setState(() {
+                          if (_offsetX2 == 0) {
+                            _offsetX2 = -1;
+                          } else {
+                            _offsetX2 = 0;
+                          }
+                          if (_offsetY2 == 1) {
+                            _offsetY2 = -1;
+                          } else {
+                            _offsetY2 = 1;
+                          }
+                        });
+                      },
                       padding: const EdgeInsets.all(20),
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -300,7 +322,7 @@ class AlarmScreenState extends State<AlarmScreen> {
                     children: [
                       Positioned.fill(
                         child: Align(
-                          alignment: Alignment(1.01, 0.0),
+                          alignment: const Alignment(1.01, 0),
                           // alignment: Alignment.centerRight,
                           child: AnimatedContainer(
                             transform: Matrix4.translationValues(_offsetX2 == 0 ? 0 : MediaQuery.of(context).size.width, 0, 0),
@@ -327,11 +349,14 @@ class AlarmScreenState extends State<AlarmScreen> {
                                 child: Stack(
                                   children: [
                                     ...List<int>.generate(24, (index) => index).map((index) {
-                                      var number = (startNumber + index) % 60;
-                                      double angle = 2 * math.pi * (index / 24);
+                                      final number = (startNumber + index) % 60;
+                                      setState(() {
+                                        minute = number;
+                                      });
+                                      final angle = 2 * math.pi * (index / 24);
 
-                                      double fontSize = 70;
-                                      double scale = 0.5 * (math.cos(2 * math.pi * (index + 12) / 24) + 1);
+                                      const fontSize = 70.0;
+                                      final scale = 0.5 * (math.cos(2 * math.pi * (index + 12) / 24) + 1);
 
                                       final radius = MediaQuery.of(context).size.width * 1.13;
                                       return Transform.translate(
@@ -342,9 +367,9 @@ class AlarmScreenState extends State<AlarmScreen> {
                                         child: Transform.scale(
                                           scale: scale,
                                           child: Text(
-                                            '${number.toString().padLeft(2, '0')}',
+                                            number.toString().padLeft(2, '0'),
                                             key: ValueKey<int>(number),
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: fontSize,
                                               color: Colors.black,
                                             ),
@@ -361,8 +386,7 @@ class AlarmScreenState extends State<AlarmScreen> {
                       ),
                       Positioned.fill(
                         child: Align(
-                          // alignment: Alignment.centerLeft,
-                          alignment: Alignment(-1.01, 0.0),
+                          alignment: const Alignment(-1.01, 0),
                           child: AnimatedContainer(
                             width: MediaQuery.of(context).size.width * 2.5,
                             height: MediaQuery.of(context).size.height * 2.5,
@@ -389,11 +413,11 @@ class AlarmScreenState extends State<AlarmScreen> {
                                 child: Stack(
                                   children: [
                                     ...List<int>.generate(24, (index) => index).map((index) {
-                                      var hour = (index + startHour) % 24;
-                                      double angle = 2 * math.pi * index / 24;
+                                      final hour = (index + startHour) % 24;
+                                      final angle = 2 * math.pi * index / 24;
 
-                                      double fontSize = 70;
-                                      double scale = 0.5 * (math.cos(2 * math.pi * (index) / 24) + 1);
+                                      const fontSize = 70.0;
+                                      final scale = 0.5 * (math.cos(2 * math.pi * (index) / 24) + 1);
 
                                       final radius = MediaQuery.of(context).size.width * 1.12;
                                       return Transform.translate(
@@ -409,22 +433,14 @@ class AlarmScreenState extends State<AlarmScreen> {
                                           child: Transform.scale(
                                             scale: scale,
                                             child: Text(
-                                              '${hour.toString().padLeft(2, '0')}',
+                                              hour.toString().padLeft(2, '0'),
                                               key: ValueKey<int>(hour),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: fontSize,
                                                 color: Colors.black,
                                               ),
                                             ),
                                           ),
-                                          // child: Text(
-                                          //   '${hour.toString().padLeft(2, '0')}',
-                                          //   key: ValueKey<int>(hour),
-                                          //   style: TextStyle(
-                                          //     fontSize: fontSize,
-                                          //     color: Colors.black,
-                                          //   ),
-                                          // ),
                                         ),
                                       );
                                     }),
@@ -436,15 +452,19 @@ class AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ),
                       Center(
-                        child: Container(
-                          height: 100,
-                          width: 200,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey[300]!,
-                              width: 2,
+                        child: AnimatedOpacity(
+                          opacity: _offsetX2 == 0 ? 1 : 0,
+                          duration: _duration,
+                          child: Container(
+                            height: 100,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.grey[300]!,
+                                width: 2,
+                              ),
                             ),
                           ),
                         ),
@@ -453,64 +473,84 @@ class AlarmScreenState extends State<AlarmScreen> {
                   ),
                 ),
               ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
+              AnimatedOpacity(
+                opacity: _offsetY2 == 1 ? 0 : 1,
+                duration: const Duration(milliseconds: 150),
+                child: AnimatedContainer(
+                  duration: _duration,
+                  transform: Matrix4.translationValues(0, _offsetY2 == 1 ? MediaQuery.of(context).size.height / 4 : 0, 0),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Icon(FontAwesomeIcons.music),
-                      Text(
-                        'Sound',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
+                      Column(
+                        children: [
+                          Icon(FontAwesomeIcons.music),
+                          Text(
+                            'Sound',
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'Wake up',
+                            style: TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Wake up',
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
+                      Column(
+                        children: [
+                          Icon(FontAwesomeIcons.bell),
+                          Text(
+                            'Snooze',
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'Every 10 min',
+                            style: TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Icon(FontAwesomeIcons.repeat),
+                          Text(
+                            'Repeat',
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                          Text(
+                            'No',
+                            style: TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Column(
-                    children: [
-                      Icon(FontAwesomeIcons.bell),
-                      Text(
-                        'Snooze',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        'Every 10 min',
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Icon(FontAwesomeIcons.repeat),
-                      Text(
-                        'Repeat',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        'No',
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              AnimatedContainer(
+                padding: const EdgeInsets.all(8),
+                onEnd: () {
+                  log('end $_offsetX2 $_offsetY2 $_offsetX $_offsetY');
+                  if (_offsetX2 == -1.0 && _offsetY2 == 1.0 && _offsetX == -1.0 && _offsetY == -1.0) {
+                    log('entro');
+                    setState(() {
+                      _offsetX = 0;
+                      _offsetY = 0;
+                    });
+                  }
+                },
+                duration: _duration,
+                transform: Matrix4.translationValues(0, _offsetY2 == 1 ? MediaQuery.of(context).size.height / 10 : 0, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -519,7 +559,20 @@ class AlarmScreenState extends State<AlarmScreen> {
                       radius: 30,
                       child: IconButton(
                         color: Colors.black,
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            if (_offsetX2 == 0) {
+                              _offsetX2 = -1;
+                            } else {
+                              _offsetX2 = 0;
+                            }
+                            if (_offsetY2 == 1) {
+                              _offsetY2 = -1;
+                            } else {
+                              _offsetY2 = 1;
+                            }
+                          });
+                        },
                         icon: const Icon(FontAwesomeIcons.x),
                       ),
                     ),
@@ -545,34 +598,6 @@ class AlarmScreenState extends State<AlarmScreen> {
               ),
             ],
           ),
-          // Align(
-          //   child: CircleAvatar(
-          //     backgroundColor: Colors.black,
-          //     radius: MediaQuery.of(context).size.width * 0.5,
-          //     child: Stack(
-          //       children: [
-          //         ...List<int>.generate(20, (index) => index).map((index) {
-          //           double angle = math.pi / 10 * index; // Ajusta este valor para cambiar la separación entre los números
-          //           double fontSize = 20 * (1 - math.cos(angle));
-          //           double radius = MediaQuery.of(context).size.width * 0.45;
-          //           return Transform.translate(
-          //             offset: Offset.fromDirection(
-          //               angle,
-          //               radius,
-          //             ),
-          //             child: Text(
-          //               '${index + 1}',
-          //               style: TextStyle(
-          //                 fontSize: fontSize,
-          //                 color: Colors.white,
-          //               ),
-          //             ),
-          //           );
-          //         }),
-          //       ],
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
